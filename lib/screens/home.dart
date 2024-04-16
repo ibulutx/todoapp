@@ -60,7 +60,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     TodoService todoService = TodoService();
-    todoService.getTodos();
 
     double deviceHeight = MediaQuery.of(context).size.height;
     double deviceWidth = MediaQuery.of(context).size.width;
@@ -107,16 +106,28 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
               child: SingleChildScrollView(
-                  child: ListView.builder(
-                primary: false,
-                shrinkWrap: true,
-                itemCount: todo.length,
-                itemBuilder: (context, index) {
-                  return TodoItem(task: todo[index]);
+                child: FutureBuilder(
+                future: todoService.getUncompletedTodos(),
+                builder: (context, snapshot) {
+                  print(snapshot.data);
+                  if (snapshot.data == null) {
+                    return const CircularProgressIndicator();
+                  }
+                  else {
+                    return ListView.builder(
+                      primary: false,
+                      shrinkWrap: true,
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (context, index) {
+                        return TodoItem(task: snapshot.data![index],
+                        );
+                      },
+                    );
+                  }
                 },
-              )),
+              ),
             ),
-          ),
+          ),),
           const Padding(
             padding: EdgeInsets.only(left: 20),
             child: Align(
@@ -127,20 +138,34 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
+
           Expanded(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
               child: SingleChildScrollView(
-                  child: ListView.builder(
-                primary: false,
-                shrinkWrap: true,
-                itemCount: completed.length,
-                itemBuilder: (context, index) {
-                  return TodoItem(task: completed[index]);
-                },
-              )),
+                  child: FutureBuilder(
+                    future: todoService.getCompletedTodos(),
+                    builder: (context, snapshot) {
+                      print(snapshot.data);
+                      if (snapshot.data == null) {
+                        return const CircularProgressIndicator();
+                      }
+                      else {
+                        return ListView.builder(
+                          primary: false,
+                          shrinkWrap: true,
+                          itemCount: snapshot.data!.length,
+                          itemBuilder: (context, index) {
+                            return TodoItem(task: snapshot.data![index],
+                            );
+                          },
+                        );
+                      }
+                    },
+                  ),),
             ),
           ),
+
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).push(MaterialPageRoute(

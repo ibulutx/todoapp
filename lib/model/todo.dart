@@ -16,7 +16,7 @@ class Todo {
     id = json["id"];
     todo = json["todo"];
     completed = json["completed"];
-    userId = json["usedId"];
+    userId = json["userId"];
   }
 //To JSON
 Map<String, dynamic> toJson() {
